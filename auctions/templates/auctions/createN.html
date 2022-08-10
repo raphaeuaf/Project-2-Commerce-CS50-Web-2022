@@ -1,0 +1,68 @@
+{% extends "auctions/layout.html" %}
+
+{% block body%}
+    <h2 style="font-family: cursive; margin-top: 30px; margin-bottom: 30px;">Create Listing</h2>
+    {% if new_item.msg_title or new_item.msg_desc or new_item.msg_bid or new_item.msg_img or new_item.msg_cat %}
+        {% load static %}
+        <img style="margin-left: 60%;
+                    margin-top: -10%;"
+                    src="{% static 'auctions/madjum.gif' %}"
+                    alt="madjum" width="150">
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group row">
+            <label for="title" class="col-sm-1 col-form-label">Title:</label> 
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="title" id="title" value="{{ new_item.title }}">
+                <span style="color: red; font-family: cursive;" name="adv">{{ new_item.msg_title }}</span>
+            </div>        
+        </div>
+        <div class="form-group row">
+            <label for="description" class="col-sm-1 col-form-label">Description:</label>
+            <div class="col-sm-10">
+                <textarea class="form-control" name="description" id="description" rows="5">{{ new_item.desc }}</textarea>
+                <span style="color: red; font-family: cursive;">{{ new_item.msg_desc }}</span>
+            </div>
+        </div>
+        <div class="form-group row">
+            {% load static %}
+            <label for="bid" class="col-sm-1 col-form-label">Start Bid:</label> 
+            <div class="input-group col-sm-10">     
+                <div class="input-group-prepend">
+                    <div class="input-group-text">
+                        <img src="{% static 'auctions/money.gif' %}" height="24px">
+                    </div>
+                </div>              
+                <input type="number" min="0" class="form-control" name="bid" id="bid" value="{{ new_item.bid }}">
+            </div>
+            <span class="col-sm-10" style="color: red; font-family: cursive;">{{ new_item.msg_bid }}</span>
+        </div>
+        <div class="form-group row">
+            <label for="img" class="col-sm-1 col-form-label">Image Url:</label> 
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="img" id="img" value="{{ new_item.img }}">
+                <span style="color: red; font-family: cursive;">{{ new_item.msg_img }}</span>
+            </div>        
+        </div>
+        <div class="form-group row">
+            <label for="cat" class="col-sm-1 col-form-label">Categories:</label> 
+            <div class="col-sm-10">
+                <select class="form-control" name="cat" id="cat" multiple>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category }} - {{ category.quantity }}</option>
+                    {% endfor%}
+                </select>
+                <span style="color: red; font-family: cursive;">{{ new_item.msg_cat }}</span>
+            </div>        
+        </div>
+        <div class="form-group row">
+            <label for="owner" class="col-sm-1 col-form-label">Owner:</label> 
+            <div class="col-sm-10">
+                <input type="hidden" name="owner" value="{{ user.id}}">
+                <input type="text" class="form-control" name="ownername" value="{{ user.username }}" disabled>
+            </div>
+        </div>
+        <input class="btn btn-primary" type="submit" value="Save">
+    </form>
+{% endblock %}

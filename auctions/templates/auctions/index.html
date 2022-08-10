@@ -1,0 +1,77 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2 style="font-family: cursive; margin-top: 30px; margin-bottom: 30px;">{{ title_page }}</h2>
+        <div class="card-columns">
+            <!-- The css file doesn't work and I don't know why. Suddenly, it stops working
+            So, I add this style tag in order to guarantee my customization -->
+            {% if nothing %}
+                <div style="font-family: cursive;">
+                    {% load static %}
+                    <img style="margin-left: 5%;
+                                margin-top: -10%;"
+                                src="{% static 'auctions/madbra.gif' %}"
+                                alt="madjum" width="400">
+                </div>
+            {% endif %}
+            {% if no_category %}
+                <div style="font-family: cursive;">
+                    {% load static %}
+                    <img style="margin-left: 5%;
+                                margin-top: -10%;"
+                                src="{% static 'auctions/madjum.gif' %}"
+                                alt="madjum" width="400">
+                </div>
+            {% endif %}
+            {% for auction in auctions %}
+                <style>
+                    .card:hover {
+                        background-color: #e1f3ff;
+                    }
+
+                    #bttn {
+                        background-color: #ff6600;
+                        border: none;
+                        margin-bottom: 10px;
+                    }
+                </style>
+                {% if auction.is_active == True %}
+                <div class="card">
+                {% else %}
+                    <div class="card" style="background-color: rgba(245, 245, 245, 1); opacity: .4;">
+                {% endif %}
+                        <div class="card-body">
+                            {% if auction.is_active == False %}
+                                {% if auction.thereis_bid == False %}
+                                    <h2 style="font-family: cursive; color: red;">Unavailable</h2>
+                                {% else %}
+                                    <h2 style="font-family: cursive; color: red;">Sold</h2>
+                                {% endif %}
+                            {% endif %}
+                            <a href="viewitem/{{ auction.id }}"><img src="{{ auction.image_url }}" class="card-img-top" alt="photo">
+                            <p class="card-title"><h5 style="color: black;">{{ auction.title }}</h5></p></a>
+                            <p class="card-text">{{ auction.description }}</p>
+                            {% if auction.thereis_bid == False %}
+                                <p class="card-text" style="color: green"><strong>$ {{ auction.start_bid }}</strong></p>
+                            {% else %}
+                                <p class="card-text" style="color: green"><strong>$ {{ auction.current_bid }}</strong></p>
+                            {% endif %}
+                            {% if user == auction.owner %}
+                                <p class="card-text" style="color: #777777">Seller: You, <strong>{{ auction.owner }}</strong></p>
+                            {% else %}
+                                <p class="card-text" style="color: #777777">Seller: <strong>{{ auction.owner }}</strong></p>
+                            {% endif %}
+                            <a href="viewitem/{{ auction.id }}" class="btn btn-primary">View</a>
+                        </div>
+                        <div class="card-footer">
+                            <div>
+                                {% for category in auction.category.all %}
+                                    <a href="{% url 'index' %}{{ category.id }}" id="bttn" class="btn btn-primary btn-sm">{{ category }}</a>
+                                {% endfor %}                       
+                            </div>
+                            <p class="card-text"><small class="text-muted">Published: {{ auction.date_published }}</small></p>
+                        </div>
+                    </div>
+            {% endfor %}
+        </div>
+{% endblock %}

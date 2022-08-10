@@ -1,0 +1,97 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}Auctions{% endblock %}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="{% static 'auctions/styles.css' %}" rel="stylesheet"/>
+    </head>
+    <body>
+        <!-- The css file doesn't work and I don't know why. Suddenly, it stops working
+        So, I add this style tag in order to guarantee my customization -->
+        <style>
+            body {
+                padding: 10px;
+                background-color: transparent;
+            }
+            #cat1 {
+                color: #007bff;
+                border: none;
+            }
+
+            #cat1:hover {
+                color: #0056b3;
+            }
+
+            nwl {
+                color: white;
+                font-weight: bolder;
+                font-family: cursive;
+                background-color: #007bff;
+                border-left: 3px solid #007bff;
+                border-right: 3px solid #007bff;
+                border-radius: 8px;
+            }
+        </style>
+        <h1>Auctions</h1>
+        <div style="margin-top: 15px; margin-bottom: 15px;">
+            {% if user.is_authenticated %}
+                {% load static %}
+                <img style="margin-top: -2.0%;
+                            margin-right: -4%;"
+                     src="{% static 'auctions/signedasgray2.gif' %}"
+                     alt="Signed as" width="200"><strong style="font-family:cursive;">
+                        {{ user.username }}.</strong>
+                            
+            {% else %}
+                {% load static %}
+                <img style="margin-top: -1.5%;
+                            margin-bottom: -1.5%;"
+                     src="{% static 'auctions/notsignedin.gif' %}"
+                     alt="Not signed in." width="200">
+            {% endif %}
+        </div>
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link {{ active_index }}" href="{% url 'index' %}">Active Listings</a>
+            </li>
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+                {% if n_wl == 0 %}
+                    <a class="nav-link {{ active_wl }}" href="{% url 'watchlist' %}">Watchlist</a>
+                {% else %}
+                    <a class="nav-link {{ active_wl }}" href="{% url 'watchlist' %}">Watchlist <nwl>{{ n_wl }}</nwl></a>
+                {% endif %}
+            </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ active_create }}" href="{% url 'create' %}">Create Listing</a>
+                </li>     
+                <li clas="nav-item">
+                    <select onchange="window.location.href=this.value" class="form-control" id="cat1">
+                        <option value="">Categories</option>
+                        <option disabled>&#8212&#8212&#8212&#8212&#8212</option>
+                        <option value="{% url 'index' %}categories">All</option>
+                        <option disabled>&#8212&#8212&#8212&#8212&#8212</option>
+                        {% for category in categories %}
+                            <option value="{% url 'index' %}{{ category.id }}">{{ category }} - {{ category.quantity }}</option>
+                        {% endfor %}
+                    </select>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'register' %}">Register</a>
+                </li>
+            {% endif %}
+        </ul>
+        <hr>
+        {% block body %}
+        {% endblock %}
+    </body>
+</html>

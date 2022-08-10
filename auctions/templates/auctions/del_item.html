@@ -1,0 +1,96 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% if dict.same %}
+        <h2 style="font-family: cursive; margin-top: 30px; color: {{ dict.color_tp }};">{{ dict.title_page }}</h2>
+        <h4 style="font-family: cursive; color: gray;">{{ dict.stitle_page }}</h4>
+        <small class="text-muted">Published: {{ auction.date_published }}</small></p>
+        <div class="card-group">
+            <!-- The css file doesn't work and I don't know why. Suddenly, it stops working
+            So, I add this style tag in order to guarantee my customization -->
+                <style>
+                    .card:hover {
+                        background-color: #e1f3ff;
+                    }
+
+                    #bttn {
+                        background-color: #ff6600;
+                        border: none;
+                        margin-bottom: 10px;
+                    }
+                    #bttnred {
+                        background-color: #ff1e00;
+                        border: none;
+                    }
+                    #bttngreen {
+                        background-color: green;
+                        border: none;
+                    }
+                    #bttngray {
+                        background-color: #888888;
+                        border: none;
+                    }
+                    #bttnlgreen {
+                        background-color: #73e997;
+                        border: none;
+                    }
+                </style>
+                {% if auction.is_active == True %}
+                    <div class="card">
+                {% else %}
+                    <div class="card" style="background-color: rgba(245, 245, 245, 1); opacity: .4;">
+                {% endif %}
+                        <div class="card-body">
+                            <h2 style="font-family: cursive; color: red;">{{ dict.titleimg }}</h2>
+                            <img src="{{ auction.image_url }}" class="card-img-top" alt="photo">
+                            <div style="color: #777777; margin-top: 10px; margin-bottom: 10px;">
+                                <p class="card-text">Seller:<strong> You, {{ auction.owner }}</strong></p>
+                            </div>
+                            <div>
+                                {% for category in auction.category.all %}
+                                    <a href="{% url 'index' %}{{ category.id }}" id="bttn" name="cats" class="btn btn-primary btn-sm">{{ category }}</a>
+                                {% endfor %}              
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            {% if auction.is_active == True %}
+                                <div>
+                            {% else %}
+                                <div  style="background-color: rgba(245, 245, 245, 1); opacity: .2; margin-bottom: 15px">
+                            {% endif %}
+                                    <p class="card-title"><h5>{{ auction.title }}</h5></p>
+                                    <p class="card-text">{{ auction.description }}</p>
+                                </div>
+                                <form method="post" action="{% url 'del_item' auction.id %}">  
+                                    {% csrf_token %}
+                                    <div class="form-group row" style="margin-top: 40px">
+                                        <div class="input-group col-sm-12" style="margin-bottom: 15px">
+                                            <h4 style="font-family: cursive; color: gray;">{{ auction.msg_del }}</h4>
+                                        </div>
+                                        <div class="input-group col-sm-8" style="margin-bottom: 15px">    
+                                            <input id="bttnred" class="btn btn-primary" type="submit" name="buttondel" value="Delete">                       
+                                        </div>
+                                        <div class="input-group col-sm-8" style="margin-bottom: 3px">     
+                                            <small class="text-muted">If you want to delete this item, your password must be typed</small>
+                                        </div>
+                                        <div class="input-group col-sm-8" style="margin-bottom: 15px">
+                                            <input class="form-control" type="password" name="pass_del" placeholder="Password">                       
+                                        </div>
+                                        <div class="input-group col-sm-12" style="margin-bottom: 15px">
+                                            <h4 style="font-family: cursive; color: red;">{{ dict.msg_pas }}</h4>
+                                        </div>
+                                        <div class="input-group col-sm-8" style="margin-bottom: 15px">
+                                            <a href="{% url 'viewitem' auction.id %}" id="bttngreen" class="btn btn-primary" name="view">View Item</a>
+                                            <a href="{% url 'index' %}" class="btn btn-primary" name="home" style="margin-left: 15px;">Home</a>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" value="{{ auction.id }}" name="item_id">
+                                </form>
+                        </div>
+                    </div>
+        </div>
+    {% endif %}
+
+{% endblock %}

@@ -1,0 +1,21 @@
+body {
+    padding: 10px;
+}
+
+#cat1 {
+    color: #007bff;
+    border: none;
+}
+
+#cat1:hover {
+    color: #0056b3;
+}
+.card:hover {
+    background-color: #e1f3ff;
+}
+
+#bttn {
+    background-color: #ff6600;
+    border: none;
+    margin-bottom: 10px;
+}

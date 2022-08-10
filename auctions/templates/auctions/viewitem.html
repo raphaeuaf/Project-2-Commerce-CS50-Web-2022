@@ -1,0 +1,182 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2 style="font-family: cursive; margin-top: 30px; color: {{ dict_auctions.color_tp }};">{{ dict.title_page }}</h2>
+    {% if dict.not_user %}
+        <div style="background-color: #ffd9ad">
+            <h3 style="font-family: cursive; margin-top: 30px; color: red;">{{ dict.not_user }}</h3>
+            <p>Click <a href="{% url 'login' %}">here</a> to login</p>
+            <p>Don't have an account? <a href="{% url 'register' %}">Register here.</a></p>
+        </div>
+    {% endif %}
+    <small class="text-muted">Published: {{ auction.date_published }}</small></p>
+    <div class="card-group">
+        <!-- The css file doesn't work and I don't know why. Suddenly, it stops working
+        So, I add this style tag in order to guarantee my customization -->
+            <style>
+                .card:hover {
+                    background-color: #e1f3ff;
+                }
+
+                #bttn {
+                    background-color: #ff6600;
+                    border: none;
+                    margin-bottom: 10px;
+                }
+                #bttnred {
+                    background-color: #ff1e00;
+                    border: none;
+                }
+                #bttngreen {
+                    background-color: green;
+                    border: none;
+                }
+                #bttngray {
+                    background-color: #888888;
+                    border: none;
+                }
+                #bttnlgreen {
+                    background-color: #73e997;
+                    border: none;
+                }
+            </style>
+            {% if auction.is_active == True %}
+            <div class="card">
+            {% else %}
+                <div class="card" style="background-color: rgba(245, 245, 245, 1); opacity: .4;">
+            {% endif %}
+                    <div class="card-body">                    
+                        <form method="post" action="{% url 'viewitem' auction.id %}">        
+                            {% csrf_token %}
+                            <div>
+                                <input id="{{ dict.btnid }}" class="btn btn-primary btn-sm" type="submit" name="watchlist" value="Watchlist">
+                                <p><small class="text-muted">{{ dict.message_wl }}</small></p>               
+                            </div>
+                        </form>
+                        <hr>
+                        <h2 style="font-family: cursive; color: red;">{{ dict.titleimg }}</h2>
+                        <img src="{{ auction.image_url }}" class="card-img-top" alt="photo">                  
+                        <div style="color: #777777; margin-top: 10px; margin-bottom: 10px;">            
+                            {% if dict.same %}              
+                                <p class="card-text">Seller:<strong> You, {{ auction.owner }}</strong></p>
+                            {% else %}
+                                <p class="card-text">Seller:<strong> {{ auction.owner }}</strong></p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {% for category in auction.category.all %}
+                                <a href="{% url 'index' %}{{ category.id }}" id="bttn" class="btn btn-primary btn-sm">{{ category }}</a>
+                            {% endfor %}                       
+                        </div>
+                    </div>
+                </div>
+            <div class="card">
+                <div class="card-body">
+                    {% if auction.is_active == True %}
+                        <div>
+                    {% else %}
+                        <div  style="background-color: rgba(245, 245, 245, 1); opacity: .2; margin-bottom: 15px">
+                    {% endif %}
+                            <p class="card-title"><h5>{{ auction.title }}</h5></p>
+                            <p class="card-text">{{ auction.description }}</p>
+                        </div>
+                        <h3 style="color: {{ dict.color }};">{{ dict.sold }}</h3>
+                        <p class="card-text">
+                            {% if auction.thereis_bid == False %}
+                                <h6>Starting Bid: <span style="color: green; font-size: x-large;">
+                                    $ {{ auction.start_bid }}</span>
+                                </h6>
+                            {% else %}
+                                <h6>Current Bid: <span style="color: green; font-size: x-large;">
+                                    $ {{ auction.current_bid }}</span>
+                                </h6>
+                            {% endif %}
+                        </p>
+                        <small class="text-muted">{{ dict.message_bid }}</small>
+                        {% if user.username %}         
+                            <form method="post" action="{% url 'bid' %}">  
+                                {% csrf_token %}
+                                <div class="form-group row">
+                                    {% load static %}
+                                    <div class="input-group col-sm-8">     
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <img src="{% static 'auctions/money.gif' %}" height="24px">
+                                            </div>
+                                            {% if auction.thereis_bid == True %}
+                                                <input type="number" min="{{ auction.current_bid }}" class="form-control" name="bid" style="margin-right: 10px;" {{ dict.onoff_field }} {{ dict.required }}>
+                                            {% else %}
+                                                <input type="number" min="{{ auction.start_bid }}" class="form-control" name="bid" style="margin-right: 10px;" {{ dict.onoff_field }} {{ dict.required }}>
+                                            {% endif %}
+                                        </div>
+                                        <input id="{{ dict.btn_bid_id }}" class="btn btn-primary" type="submit" name="buttonbid" value="{{ dict.btn_bid }}" {{ dict.onoff_btn }}>                          
+                                    </div>             
+                                </div>
+                                <h6>{{ dict.msg_win }}</h6>
+                                <input type="hidden" value="{{ auction.id }}" name="item_id">
+                            </form>
+                            {% if dict.same %}
+                                <div class="form-group row"  style="margin-top: 40px">
+                                    {% load static %}
+                                    <div class="input-group col-sm-8" style="margin-bottom: 15px">
+                                        <a href="{% url 'del_item' auction.id %}" id="bttnred" class="btn btn-primary" name="buttondel">Delete</a>
+                                    </div>
+                                    <div class="input-group col-sm-8" style="margin-bottom: 3px">
+                                    </div>
+                                </div>
+                                <input type="hidden" value="{{ auction.id }}" name="item_id">
+                            {% endif %}
+                        {% else %}
+                            <p class="card-text">
+                                <div style="background-color: #ffd9ad;">
+                                    <p>You must login to place a bid</p>
+                                    <p>Click <a href="{% url 'login' %}">here</a> to login</p>
+                                    <p>Don't have an account? <a href="{% url 'register' %}">Register here.</a></p>
+                                </div>
+                            </p>
+                        {% endif %}
+                    </div>
+            </div>
+    </div>
+    <form method="post" action="{% url 'add_comment' %}">  
+        {% csrf_token %}
+        <div style="margin-top: 30px;">
+            <div>
+                <h5>Comments:</h5>
+            </div>
+            <div>
+                <textarea class="form-control" name="comment" rows="5" required></textarea>
+            </div>
+            {% if user.username %}
+                <div style="margin-top: 10px;">
+                    <input type="submit" class="btn btn-primary" id="bttngray" value="Add Comment">
+                </div>
+            {% else %}
+                <div style="background-color: #ffd9ad;">
+                    <p>You must login to comment</p>
+                    <p>Click <a href="{% url 'login' %}">here</a> to login</p>
+                    <p>Don't have an account? <a href="{% url 'register' %}">Register here.</a></p>
+                </div>
+            {% endif %}
+        </div>
+        <input type="hidden" value="{{ auction.id }}" name="item_id">
+        <div style="margin-top: 10px;">
+            <small class="text-muted">{{ dict.msg_comment }}</small>
+    </form>
+    {% for comment in dict.comments %}
+        <div class="card" style="margin-top: 10px; border: none;">
+            <div class="card-body">
+                <div style="background-color: #eeeeee;">
+                    {% if dict.user == comment.author %}
+                        <small class="text-muted"><b>You</b>, on {{ comment.date }}:</small>
+                    {% else %}
+                        <small class="text-muted"><b>{{ comment.author }}</b>, on {{ comment.date }}:</small>
+                    {% endif %}
+                </div>
+                <div>
+                    <p>{{ comment.content }}</p>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
